@@ -8,12 +8,29 @@ static int getSize(primitiveType type);
 
 arrayList * initialize(primitiveType type)
 {
-   return NULL;
+   int dynamic_size = 4 * getSize(type); 
+   arrayList * array_mal = (arrayList*)(malloc(sizeof(arrayList)));
+   array_mal->arraySize = 4;
+   array_mal->elementSize = getSize(type);
+   array_mal->numElements = 0;
+   array_mal->type = type;
+   array_mal->array = malloc(dynamic_size);
+   return array_mal;    
+   
 }
 
 int getSize(primitiveType type)
 {
-   return 0;
+   if(type == charType)
+   {
+       return sizeof(char);
+   }
+   if (type == shortType)
+   {
+       return sizeof(short);
+   }
+   return sizeof(int);
+
 }
 
 void addElement(arrayList * arylstP, void * element)
@@ -23,7 +40,18 @@ void addElement(arrayList * arylstP, void * element)
 
 void removeElement(arrayList * arylstP, int index)
 {
-   return;
+   char c;
+
+   char size = (arylstP->numElements - 1) * (arylstP->elementSize);
+
+   char *pntpnt;
+
+   pntpnt = arylstP->array;
+
+   for(c = index; c < size; c++)
+    {
+        pntpnt[c] = pntpnt[c+1];
+    }
 }
       
 
