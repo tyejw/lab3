@@ -1,11 +1,18 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include "arrayList.h"
 
 //getSize not accessed outside of this file so declare it to be static
 //static essentially makes it private to this file 
 static int getSize(primitiveType type);
 
+/*
+ * The initialize method set up the fields for the array list and
+ * allocates memory for the array. 
+ * @param type - This is either an int, short, or char. It is needed
+ * to determine how much memory to allocate. 
+ */
 arrayList * initialize(primitiveType type)
 {
    int dynamic_size = 4 * getSize(type); 
@@ -18,7 +25,11 @@ arrayList * initialize(primitiveType type)
    return array_mal;    
    
 }
-
+/*
+ * getSize will determine the size of the type.
+ * @param type - the primitive type of the ArrayList.
+ * @return - returns the size in bytes of the type.
+ */
 int getSize(primitiveType type)
 {
    if(type == charType)
@@ -32,29 +43,91 @@ int getSize(primitiveType type)
    return sizeof(int);
 
 }
-
+/*
+ * Add's an element to the end of the array. If the number of elements
+ * equals the size of the array the size of the array will be doubled.
+ * @param aryLstP - pointer to the array list.
+ * @param element - the element to be added to the array list.
+ */
 void addElement(arrayList * arylstP, void * element)
 {
-   return;
+   if(arylstP->numElements == arylstP->arraySize)
+   {
+      int resize = arylstP->numElements * 2;
+ 	    void* resizedArray = (void*)malloc(resize * arylstP->elementSize);
+      int n = (arylstP->numElements) * (arylstP->elementSize);    
+	    memcpy(resizedArray, arylstP->array, n);
+	    free(arylstP->array);
+	    arylstP->arraySize = resize;
+	    arylstP->array = resizedArray;
+   }    
+   arylstP->numElements++;
+    
+   if(arylstP->type == intType)
+   {
+      int* pnt = (int*)arylstP->array;
+	    int* elmnt = (int*)element;
+	    pnt[arylstP->numElements] = *elmnt; 
+   }	
+   if(arylstP->type == shortType)
+   {
+	    short* pnt = (short*)arylstP->array;
+	    short* elmnt = (short*)element;
+	    pnt[arylstP->numElements] = *elmnt; 
+   }	
+   //else charType
+   else
+   {
+	    char* pnt = (char*)arylstP->array;
+	    char* elmnt = (char*)element;
+	    pnt[arylstP->numElements] = *elmnt; 
+   }	
 }
 
+/*
+ * Removes a element from the array at the specified index.
+ * @param arylstP - pointer to the array list.
+ * @param index - integer index to be removed.
+ */
 void removeElement(arrayList * arylstP, int index)
 {
-   char c;
+   int i = 0;
+   char size = (arylstP->numElements - 1);
 
-   char size = (arylstP->numElements - 1) * (arylstP->elementSize);
+   //int
+   if ((arylstP->type) == intType)
+   {
+      for (i = index; i < size; i++)
+      {
+         int *pntpnt = (int*)arylstP->array;
+         pntpnt[i] = pntpnt[i+1];	 
+      }
+   }
+   //short
+   else if (arylstP->type == shortType)
+   {
+      for (i = index; i < size; i++)
+      {
+         short *pntpnt = (short*)arylstP->array;
+         pntpnt[i] = pntpnt[i+1];
+      }
+   }
+   //char
+   else
+   {
+      for (i = index; i < size; i++)
+      {
+         char *pntpnt = (char*)arylstP->array;
+         pntpnt[i] = pntpnt[i+1];
+      }
+   }
+   arylstP->numElements--;
+} 
 
-   char *pntpnt;
-
-   pntpnt = arylstP->array;
-
-   for(c = index; c < size; c++)
-    {
-        pntpnt[c] = pntpnt[c+1];
-    }
-}
-      
-
+/*
+ * Prints the array to output. 
+ * @param arylstP - pointer to the array list. 
+ */
 void printArray(arrayList * arylstP)
 {
    int i;
@@ -63,14 +136,23 @@ void printArray(arrayList * arylstP)
    for (i = 0; i < arylstP->numElements; i++)
    {
       if (arylstP->type == charType)
+      {
          //fill in the missing code that gets the element and &s it with 0xff
-         printf("%02x ", 0xff);
+         char *pntchar = (char*)arylstP->array;
+         printf("%02x ", pntchar[i] & 0xff);
+      }
       else if (arylstP->type == shortType)
+      {
          //fill in the missing code that gets the element and &s it with 0xffff
-         printf("%04x ", 0xffff);
+         short *pntshort = (short*)arylstP->array;
+         printf("%04x ", pntshort[i] & 0xffff);
+      }
       else if (arylstP->type == intType)
+      {
          //fill in the missing code that gets the element and &s it with 0xffffffff
-         printf("%08x ", 0xffffffff);
+         int *pntint = (int*)arylstP->array;
+         printf("%08x ", pntint[i] & 0xffffffff);
+      }
    }
    printf("\n");
 }
