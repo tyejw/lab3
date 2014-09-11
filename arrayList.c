@@ -21,7 +21,7 @@ arrayList * initialize(primitiveType type)
    array_mal->elementSize = getSize(type);
    array_mal->numElements = 0;
    array_mal->type = type;
-   array_mal->array = malloc(dynamic_size);
+   array_mal->array = (void*)malloc(dynamic_size);
    return array_mal;    
    
 }
@@ -51,17 +51,16 @@ int getSize(primitiveType type)
  */
 void addElement(arrayList * arylstP, void * element)
 {
-   if(arylstP->numElements == arylstP->arraySize)
+   if((arylstP->numElements) == (arylstP->arraySize))
    {
-      int resize = arylstP->numElements * 2;
- 	    void* resizedArray = (void*)malloc(resize * arylstP->elementSize);
+      int resize = (arylstP->numElements) * 2 * (arylstP->elementSize);
+ 	    void* resizedArray = (void*)malloc(resize);
       int n = (arylstP->numElements) * (arylstP->elementSize);    
 	    memcpy(resizedArray, arylstP->array, n);
 	    free(arylstP->array);
-	    arylstP->arraySize = resize;
 	    arylstP->array = resizedArray;
+      arylstP->arraySize = resize;
    }    
-   arylstP->numElements++;
     
    if(arylstP->type == intType)
    {
@@ -75,13 +74,13 @@ void addElement(arrayList * arylstP, void * element)
 	    short* elmnt = (short*)element;
 	    pnt[arylstP->numElements] = *elmnt; 
    }	
-   //else charType
-   else
+   if(arylstP->type == charType)
    {
 	    char* pnt = (char*)arylstP->array;
 	    char* elmnt = (char*)element;
 	    pnt[arylstP->numElements] = *elmnt; 
    }	
+   (arylstP->numElements)++;
 }
 
 /*
@@ -121,7 +120,7 @@ void removeElement(arrayList * arylstP, int index)
          pntpnt[i] = pntpnt[i+1];
       }
    }
-   arylstP->numElements--;
+   (arylstP->numElements)--;
 } 
 
 /*
@@ -156,4 +155,3 @@ void printArray(arrayList * arylstP)
    }
    printf("\n");
 }
-
